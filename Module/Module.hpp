@@ -8,68 +8,62 @@
 
 #include "mbed.h"
 
-#include "Message.hpp"
+#define BUFF_TIMEOUT_MS std::chrono::duration<uint32_t, std::milli>(1)
 
-/// TODO: Should this be the same for all modules?
-#define BUFF_TIMEOUT_MS 1
-
-template<uint32_t BUFF_SIZE>
+template<typename T, uint32_t BUFF_SIZE>
 class Module {
   public:
-    Module(osPriority priority, uint32_t stack_size,
-        unsigned char *stack_mem, const char *name) {
-      this->thread    = new Thread(priority, stack_size, stack_mem,
-          name);
-      this->occup     = new Semaphore(0);
-      this->unoccup   = new Semaphore(BUFF_SIZE);
+    Module(osPriority priority, uint32_t stack_size, unsigned char *stack_mem,
+        const char *name) {
+      _p_thread = new rtos::Thread(priority, stack_size, stack_mem, name);
+      _p_buff_busy = new rtos::Semaphore(1);
     }
 
     virtual ~Module() {
-      delete this->thread;
-      delete this->occup;
-      delete this->unoccup;
+      delete _p_thread;
+      delete _p_buff_busy;
     }
 
     bool start() {
-      bool status = false;
-      mbed::Callback<void()> cb = callback(this, &Module::task);
-      status = (this->thread->start(cb) == osOK)? true : false;
+      mbed::Callback<void()> cb = callback(this, &Module::_task);
 
-      return status;
+      return _p_thread->start(cb) == osOK? true : false;
     }
 
-    bool put_msg(const Message &msg) {
+    bool store_msg(const T &msg) {
       bool status = false;
-      std::chrono::milliseconds timeout(BUFF_TIMEOUT_MS);
-      if(this->unoccup->try_acquire_for(timeout) == true) {
-        this->buff.push(msg);
-        status = (this->occup->release() == osOK)? true : false;
-      } else {
-        status = false;
+
+      if(_p_buff_busy->try_acquire_for(BUFF_TIMEOUT_MS)) {
+        if(!_buff.full()) {
+          _buff.push(msg);
+          status = true;
+        }
+        _p_buff_busy->release();
       }
 
       return status;
     }
 
-    bool get_msg(Message &msg) {
+  protected:
+    bool _read_msg(T &msg) {
       bool status = false;
-      this->occup->acquire();
-      if(this->buff.pop(msg) == true) {
-        status = (this->unoccup->release() == osOK)? true : false;
-      } else {
-        status = false;
+
+      if(_p_buff_busy->try_acquire_for(BUFF_TIMEOUT_MS)) {
+        if(!_buff.empty()) {
+          status = _buff.pop(msg);
+        }
+        _p_buff_busy->release();
       }
 
       return status;
     }
 
   private:
-    rtos::Thread                                    *thread;
-    rtos::Semaphore                                 *occup;
-    rtos::Semaphore                                 *unoccup;
-    mbed::CircularBuffer<Message, BUFF_SIZE>        buff;
+    rtos::Thread *_p_thread;
+    rtos::Semaphore *_p_buff_busy;
+    mbed::CircularBuffer<T, BUFF_SIZE> _buff;
 
-    virtual void task() = 0;
+    virtual void _task() = 0;
 };
 
 #endif /* MODULE_HPP_ */
