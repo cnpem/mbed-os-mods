@@ -16,9 +16,8 @@
 template<uint32_t BUFF_SIZE>
 class Module {
   public:
-    Module(module_id_t id, osPriority priority, uint32_t stack_size,
+    Module(osPriority priority, uint32_t stack_size,
         unsigned char *stack_mem, const char *name) {
-      this->id        = id;
       this->thread    = new Thread(priority, stack_size, stack_mem,
           name);
       this->occup     = new Semaphore(0);
@@ -65,7 +64,6 @@ class Module {
     }
 
   private:
-    module_id_t                                     id;
     rtos::Thread                                    *thread;
     rtos::Semaphore                                 *occup;
     rtos::Semaphore                                 *unoccup;
