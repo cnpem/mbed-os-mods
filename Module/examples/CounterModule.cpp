@@ -5,10 +5,14 @@
 
 #include "CounterModule.hpp"
 
-CounterModule::CounterModule(osPriority priority, uint32_t stack_size,
-    unsigned char *stack_mem, const char *name) :
-  Module<count_cmd_t, COUNTERMODULE_BUFF_SIZE>(priority, stack_size, stack_mem,
-      name) {
+CounterModule::CounterModule(
+    mbed::Callback<bool(Kernel::Clock::duration_u32, CountCmdMessage**)>
+    try_get_for_cb,
+    /* Module params */
+    osPriority priority, uint32_t stack_size, unsigned char *stack_mem, const
+    char *name) :
+  Module(priority, stack_size, stack_mem, name),
+  _try_get_for_cb(try_get_for_cb) {
     _count = 0;
   }
 
@@ -16,25 +20,30 @@ CounterModule::~CounterModule() {}
 
 void CounterModule::_task() {
   while(true) {
-    count_cmd_t msg = ZERO;
+    bool status;
+    CountCmdMessage *count_cmd_msg;
 
     /* Reads messages */
-    if(_read_msg(msg)) {
-      switch(msg) {
-        case INCREASE:
-          ++_count;
-          break;
-        case DECREASE:
-          if(_count > 0) {
-            --_count;
-          }
-          break;
-        case ZERO:
-          _count = 0;
-          break;
-      }
-      /* Prints counter */
-      printf("%lu\n", _count);
+    status = _try_get_for_cb(rtos::Kernel::wait_for_u32_forever,
+        &count_cmd_msg);
+    assert(status);
+
+    /* Process command */
+    switch(*count_cmd_msg) {
+      case INCREASE:
+        ++_count;
+        break;
+      case DECREASE:
+        if(_count > 0) {
+          --_count;
+        }
+        break;
+      case ZERO:
+        _count = 0;
+        break;
     }
+
+    /* Prints counter */
+    printf("%lu\n", _count);
   }
 }
