@@ -17,8 +17,8 @@ static unsigned char uart_ctrl_intf_mod_stack[UARTCTRLINTFMODULE_STACK_SIZE];
 
 /* A simple counter example.
  *
- * Instantiates an UARTCtrlIntfModule and a CoreModule modules, invoking its
- * threads. The CoreModule module is designed for processing commands.
+ * Instantiates an UARTCtrlIntfModule and a CoreModule, invoking its threads.
+ * The CoreModule module is designed for processing commands.
  *
  * The UART peripheral used is the one provided via USB (you'll need to adapt
  * this if your board doesn't provide one), with baud rate set to 115200. The
