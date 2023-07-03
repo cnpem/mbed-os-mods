@@ -1,4 +1,4 @@
 Module/*
-intfs/CoreModule/*
+intfs/CtrlCoreModule/*
 intfs/TCPCtrlIntfModule/*
 intfs/UARTCtrlIntfModule/*

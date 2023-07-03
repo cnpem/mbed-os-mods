@@ -6,20 +6,20 @@
 #include "mbed.h"
 #include "EthernetInterface.h"
 
-#include "CoreModule.hpp"
+#include "CtrlCoreModule.hpp"
 #include "TCPCtrlIntfModule.hpp"
 
-#define COREMODULE_STACK_SIZE 1024
+#define CTRLCOREMODULE_STACK_SIZE 1024
 #define TCPCTRLINTFMODULE_STACK_SIZE 1024
 
 /* Statically allocated stacks */
-static unsigned char core_mod_stack[COREMODULE_STACK_SIZE];
+static unsigned char ctrl_core_mod_stack[CTRLCOREMODULE_STACK_SIZE];
 static unsigned char tcp_ctrl_intf_mod_stack[TCPCTRLINTFMODULE_STACK_SIZE];
 
 /* A simple counter example.
  *
- * Instantiates a TCPCtrlIntfModule and a CoreModule, invoking its threads. The
- * CoreModule module is designed for processing commands.
+ * Instantiates a TCPCtrlIntfModule and a CtrlCoreModule, invoking its threads.
+ * The CtrlCoreModule module is designed for processing control commands.
  *
  * The TCP port used is 3001 with 30s of timeout. The terminator char is '\r'.
  * Valid commands are:
@@ -33,9 +33,10 @@ int main() {
   nsapi_error_t nsapi_status;
   rtos::Queue<IntfModuleMessage, 1> queue;
   EthernetInterface net;
-  CoreModule core_mod(
+  CtrlCoreModule ctrl_core_mod(
       callback(&queue, &rtos::Queue<IntfModuleMessage, 1>::try_get_for),
-      osPriorityNormal, COREMODULE_STACK_SIZE, core_mod_stack, "core_mod_task");
+      osPriorityNormal, CTRLCOREMODULE_STACK_SIZE, ctrl_core_mod_stack,
+      "ctrl_core_mod_task");
   TCPCtrlIntfModule tcp_ctrl_intf_mod(&net, 3001, 30000, '\n', 32,
       callback(&queue, &rtos::Queue<IntfModuleMessage, 1>::try_put_for),
       osPriorityNormal, TCPCTRLINTFMODULE_STACK_SIZE, tcp_ctrl_intf_mod_stack,
@@ -47,7 +48,7 @@ int main() {
   nsapi_status = net.connect();
   assert(nsapi_status == NSAPI_ERROR_OK);
 
-  status = core_mod.start();
+  status = ctrl_core_mod.start();
   assert(status);
   status = tcp_ctrl_intf_mod.start();
   assert(status);

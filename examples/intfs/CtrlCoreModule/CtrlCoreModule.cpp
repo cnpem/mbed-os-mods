@@ -3,9 +3,9 @@
  * Author: Guilherme Ricioli <guilherme.ricioli@lnls.br>
  */
 
-#include "CoreModule.hpp"
+#include "CtrlCoreModule.hpp"
 
-CoreModule::CoreModule(
+CtrlCoreModule::CtrlCoreModule(
     mbed::Callback<bool(Kernel::Clock::duration_u32, IntfModuleMessage**)>
     try_get_for_cb,
     /* Module params */
@@ -15,9 +15,9 @@ CoreModule::CoreModule(
     _count = 0;
   }
 
-CoreModule::~CoreModule() {}
+CtrlCoreModule::~CtrlCoreModule() {}
 
-void CoreModule::_task() {
+void CtrlCoreModule::_task() {
   while(true) {
     bool status;
     IntfModuleMessage *p_intf_mod_msg;

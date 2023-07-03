@@ -3,24 +3,24 @@
  * Author: Guilherme Ricioli <guilherme.ricioli@lnls.br>
  */
 
-#ifndef COREMODULE_HPP_
-#define COREMODULE_HPP_
+#ifndef CTRLCOREMODULE_HPP_
+#define CTRLCOREMODULE_HPP_
 
 #include "mbed.h"
 
 #include "IntfModuleMessage.hpp"
 #include "Module.hpp"
 
-class CoreModule :
+class CtrlCoreModule :
   public Module {
     public:
-      CoreModule(
+      CtrlCoreModule(
           mbed::Callback<bool(Kernel::Clock::duration_u32, IntfModuleMessage**)>
           try_get_for_cb,
           /* Module params */
           osPriority priority, uint32_t stack_size, unsigned char *stack_mem,
           const char *name);
-      ~CoreModule();
+      ~CtrlCoreModule();
 
     private:
       uint32_t _count;
@@ -30,4 +30,4 @@ class CoreModule :
       void _task();
   };
 
-#endif /* COREMODULE_HPP_ */
+#endif /* CTRLCOREMODULE_HPP_ */
