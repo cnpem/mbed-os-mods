@@ -69,6 +69,7 @@ void TCPCtrlIntfModule::_task() {
         if(count < 0) {
           goto nsapi_error;
         }
+        assert(count == 1);
 
         if(c == _terminator) {
           break;
