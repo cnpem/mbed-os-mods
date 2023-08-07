@@ -18,7 +18,8 @@ TCPCtrlIntfModule::TCPCtrlIntfModule(
 TCPCtrlIntfModule::~TCPCtrlIntfModule() {}
 
 void TCPCtrlIntfModule::_task() {
-  char buff[_max_cmd_len];
+  /* '+ 1' is accounting for the string terminator */
+  char buff[_max_cmd_len + 1];
   rtos::Semaphore ready(0, 1);
   IntfModuleMessage intf_mod_msg = {
     .buff     = buff,
@@ -54,15 +55,12 @@ void TCPCtrlIntfModule::_task() {
     client->set_timeout(_timeout);
 
     while(true) {
-      memset(buff, 0, _max_cmd_len);
+      memset(buff, 0, sizeof(buff));
 
       /* Reads chars from TCP socket */
+      uint8_t len = 0;
       while(true) {
         char c;
-        uint8_t len = strlen(buff);
-
-        /* '+ 1' is accounting for the string terminator */
-        assert(_max_cmd_len - (len + 1) > 0);
 
         count = client->recv(&c, 1);
         debug("client->recv rc: %d\n", count);
@@ -73,6 +71,8 @@ void TCPCtrlIntfModule::_task() {
 
         if(c == _terminator) {
           break;
+        } else if(len == _max_cmd_len) {
+          continue;
         } else {
           buff[len++] = c;
         }

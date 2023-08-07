@@ -20,7 +20,8 @@ UARTCtrlIntfModule::~UARTCtrlIntfModule() {}
 void UARTCtrlIntfModule::_task() {
   bool status;
   mbed::BufferedSerial uart(_tx, _rx, _baud);
-  char buff[_max_cmd_len];
+  /* '+ 1' is accounting for the string terminator */
+  char buff[_max_cmd_len + 1];
   rtos::Semaphore ready(0, 1);
   IntfModuleMessage intf_mod_msg = {
     .buff     = buff,
@@ -30,21 +31,20 @@ void UARTCtrlIntfModule::_task() {
   while(true) {
     uint8_t count;
 
-    memset(buff, 0, _max_cmd_len);
+    memset(buff, 0, sizeof(buff));
 
     /* Reads chars from UART */
+    uint8_t len = 0;
     while(true) {
       char c;
-      uint8_t len = strlen(buff);
-
-      /* '+ 1' is accounting for the string terminator */
-      assert(_max_cmd_len - (len + 1) > 0);
 
       count = uart.read(&c, 1);
       assert(count == 1);
 
       if(c == _terminator) {
         break;
+      } else if(len == _max_cmd_len) {
+        continue;
       } else {
         buff[len++] = c;
       }
