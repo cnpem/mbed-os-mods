@@ -64,7 +64,7 @@ void TCPCtrlIntfModule::_task() {
 
         count = client->recv(&c, 1);
         debug("[TCPCtrlIntfModule::_task] client->recv rc: %d\n", count);
-        if(count < 0) {
+        if(count <= 0) {
           goto nsapi_error;
         }
         assert(count == 1);
