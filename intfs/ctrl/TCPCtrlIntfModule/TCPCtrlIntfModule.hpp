@@ -9,20 +9,21 @@
 #include "EthernetInterface.h"
 #include "mbed.h"
 
-#include "IntfModule.hpp"
+#include "CtrlIntfModule.hpp"
 
 /* TCPCtrlIntfModule is a class providing text-based TCP command interface.
  */
 class TCPCtrlIntfModule final :
-  public IntfModule {
+  public CtrlIntfModule {
     public:
       TCPCtrlIntfModule(
           EthernetInterface *p_net, uint16_t port, int timeout,
-          /* IntfModule params */
+          /* CtrlIntfModule params */
           const char terminator, const uint8_t max_cmd_len,
-          mbed::Callback<bool(Kernel::Clock::duration_u32, IntfModuleMessage*,
-            uint8_t)> try_put_for_cb, osPriority priority, uint32_t stack_size,
-          unsigned char *stack_mem, const char *name);
+          mbed::Callback<bool(Kernel::Clock::duration_u32,
+            CtrlIntfModuleMessage*, uint8_t)> try_put_for_cb,
+          osPriority priority, uint32_t stack_size, unsigned char *stack_mem,
+          const char *name);
       ~TCPCtrlIntfModule();
 
     private:

@@ -31,13 +31,13 @@ static unsigned char uart_ctrl_intf_mod_stack[UARTCTRLINTFMODULE_STACK_SIZE];
  */
 int main() {
   bool status;
-  rtos::Queue<IntfModuleMessage, 1> queue;
+  rtos::Queue<CtrlIntfModuleMessage, 1> queue;
   CtrlCoreModule ctrl_core_mod(
-      callback(&queue, &rtos::Queue<IntfModuleMessage, 1>::try_get_for),
+      callback(&queue, &rtos::Queue<CtrlIntfModuleMessage, 1>::try_get_for),
       osPriorityNormal, CTRLCOREMODULE_STACK_SIZE, ctrl_core_mod_stack,
       "ctrl_core_mod_task");
   UARTCtrlIntfModule uart_ctrl_intf_mod(USBTX, USBRX, 115200, '\n', 32,
-      callback(&queue, &rtos::Queue<IntfModuleMessage, 1>::try_put_for),
+      callback(&queue, &rtos::Queue<CtrlIntfModuleMessage, 1>::try_put_for),
       osPriorityNormal, UARTCTRLINTFMODULE_STACK_SIZE, uart_ctrl_intf_mod_stack,
       "uart_ctrl_intf_mod_task");
 

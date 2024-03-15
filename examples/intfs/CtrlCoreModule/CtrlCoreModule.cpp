@@ -6,7 +6,7 @@
 #include "CtrlCoreModule.hpp"
 
 CtrlCoreModule::CtrlCoreModule(
-    mbed::Callback<bool(Kernel::Clock::duration_u32, IntfModuleMessage**)>
+    mbed::Callback<bool(Kernel::Clock::duration_u32, CtrlIntfModuleMessage**)>
     try_get_for_cb,
     /* Module params */
     osPriority priority, uint32_t stack_size, unsigned char *stack_mem,
@@ -20,29 +20,30 @@ CtrlCoreModule::~CtrlCoreModule() {}
 void CtrlCoreModule::_task() {
   while(true) {
     bool status;
-    IntfModuleMessage *p_intf_mod_msg;
+    CtrlIntfModuleMessage *p_ctrl_intf_mod_msg;
 
     /* Reads messages */
     status = _try_get_for_cb(rtos::Kernel::wait_for_u32_forever,
-        &p_intf_mod_msg);
+        &p_ctrl_intf_mod_msg);
     assert(status);
 
     /* Processes command */
-    if(!strcmp(p_intf_mod_msg->buff, "@INC")) {
+    if(!strcmp(p_ctrl_intf_mod_msg->buff, "@INC")) {
       ++_count;
-    } else if(!strcmp(p_intf_mod_msg->buff, "@DEC")) {
+    } else if(!strcmp(p_ctrl_intf_mod_msg->buff, "@DEC")) {
       if(_count > 0) {
         --_count;
       }
-    } else if(!strcmp(p_intf_mod_msg->buff, "@ZERO")) {
+    } else if(!strcmp(p_ctrl_intf_mod_msg->buff, "@ZERO")) {
       _count = 0;
     }
 
     /* Writes message response */
-    memset(p_intf_mod_msg->buff, 0, sizeof(p_intf_mod_msg->buff));
-    snprintf(p_intf_mod_msg->buff, sizeof(p_intf_mod_msg->buff), "%lu", _count);
+    memset(p_ctrl_intf_mod_msg->buff, 0, sizeof(p_ctrl_intf_mod_msg->buff));
+    snprintf(p_ctrl_intf_mod_msg->buff, sizeof(p_ctrl_intf_mod_msg->buff),
+        "%lu", _count);
 
     /* Signalizes that response is ready */
-    p_intf_mod_msg->p_ready->release();
+    p_ctrl_intf_mod_msg->p_ready->release();
   }
 }

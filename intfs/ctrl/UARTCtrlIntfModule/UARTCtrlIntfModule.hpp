@@ -8,20 +8,21 @@
 
 #include "mbed.h"
 
-#include "IntfModule.hpp"
+#include "CtrlIntfModule.hpp"
 
 /* UARTCtrlIntfModule is a class providing text-based UART command interface.
  */
 class UARTCtrlIntfModule final :
-  public IntfModule {
+  public CtrlIntfModule {
     public:
       UARTCtrlIntfModule(
           PinName tx, PinName rx, int baud,
-          /* IntfModule params */
+          /* CtrlIntfModule params */
           const char terminator, const uint8_t max_cmd_len,
-          mbed::Callback<bool(Kernel::Clock::duration_u32, IntfModuleMessage*,
-            uint8_t)> try_put_for_cb, osPriority priority, uint32_t stack_size,
-          unsigned char *stack_mem, const char *name);
+          mbed::Callback<bool(Kernel::Clock::duration_u32,
+            CtrlIntfModuleMessage*, uint8_t)> try_put_for_cb,
+          osPriority priority, uint32_t stack_size, unsigned char *stack_mem,
+          const char *name);
       ~UARTCtrlIntfModule();
 
     private:

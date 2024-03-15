@@ -7,12 +7,12 @@
 
 TCPCtrlIntfModule::TCPCtrlIntfModule(
     EthernetInterface *p_net, uint16_t port, int timeout,
-    /* IntfModule params */
+    /* CtrlIntfModule params */
     const char terminator, const uint8_t max_cmd_len,
-    mbed::Callback<bool(Kernel::Clock::duration_u32, IntfModuleMessage*,
+    mbed::Callback<bool(Kernel::Clock::duration_u32, CtrlIntfModuleMessage*,
       uint8_t)> try_put_for_cb, osPriority priority, uint32_t stack_size,
     unsigned char *stack_mem, const char *name) :
-  IntfModule(terminator, max_cmd_len, try_put_for_cb, priority, stack_size,
+  CtrlIntfModule(terminator, max_cmd_len, try_put_for_cb, priority, stack_size,
       stack_mem, name), _p_net(p_net), _port(port), _timeout(timeout) {}
 
 TCPCtrlIntfModule::~TCPCtrlIntfModule() {}
@@ -21,7 +21,7 @@ void TCPCtrlIntfModule::_task() {
   /* '+ 1' is accounting for the string terminator */
   char buff[_max_cmd_len + 1];
   rtos::Semaphore ready(0, 1);
-  IntfModuleMessage intf_mod_msg = {
+  CtrlIntfModuleMessage ctrl_intf_mod_msg = {
     .buff     = buff,
     .p_ready  = &ready
   };
@@ -80,7 +80,7 @@ void TCPCtrlIntfModule::_task() {
 
       /* Queues the command */
       nsapi_status = _try_put_for_cb(rtos::Kernel::wait_for_u32_forever,
-        &intf_mod_msg, 0);
+        &ctrl_intf_mod_msg, 0);
       assert(nsapi_status);
 
       /* Waits for the command to be processed and its response be filled in

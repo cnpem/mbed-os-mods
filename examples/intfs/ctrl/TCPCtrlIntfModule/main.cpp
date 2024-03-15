@@ -31,14 +31,14 @@ static unsigned char tcp_ctrl_intf_mod_stack[TCPCTRLINTFMODULE_STACK_SIZE];
 int main() {
   bool status;
   nsapi_error_t nsapi_status;
-  rtos::Queue<IntfModuleMessage, 1> queue;
+  rtos::Queue<CtrlIntfModuleMessage, 1> queue;
   EthernetInterface net;
   CtrlCoreModule ctrl_core_mod(
-      callback(&queue, &rtos::Queue<IntfModuleMessage, 1>::try_get_for),
+      callback(&queue, &rtos::Queue<CtrlIntfModuleMessage, 1>::try_get_for),
       osPriorityNormal, CTRLCOREMODULE_STACK_SIZE, ctrl_core_mod_stack,
       "ctrl_core_mod_task");
   TCPCtrlIntfModule tcp_ctrl_intf_mod(&net, 3001, 30000, '\n', 32,
-      callback(&queue, &rtos::Queue<IntfModuleMessage, 1>::try_put_for),
+      callback(&queue, &rtos::Queue<CtrlIntfModuleMessage, 1>::try_put_for),
       osPriorityNormal, TCPCTRLINTFMODULE_STACK_SIZE, tcp_ctrl_intf_mod_stack,
       "tcp_ctrl_intf_mod_task");
 

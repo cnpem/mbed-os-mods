@@ -3,8 +3,8 @@
  * Author: Guilherme Ricioli <guilherme.ricioli@lnls.br>
  */
 
-#ifndef INTFMODULEMESSAGE_HPP_
-#define INTFMODULEMESSAGE_HPP_
+#ifndef CTRLINTFMODULEMESSAGE_HPP_
+#define CTRLINTFMODULEMESSAGE_HPP_
 
 #include "mbed.h"
 
@@ -15,13 +15,13 @@
  * of '*p_ready' that the command processing is done and the response is filled
  * in 'buff'.
  */
-struct IntfModuleMessage {
+struct CtrlIntfModuleMessage {
   char *buff;
   rtos::Semaphore *p_ready;
 
-  IntfModuleMessage() {}
-  IntfModuleMessage(char *buff, rtos::Semaphore *p_ready) :
+  CtrlIntfModuleMessage() {}
+  CtrlIntfModuleMessage(char *buff, rtos::Semaphore *p_ready) :
     buff(buff), p_ready(p_ready) {}
 };
 
-#endif /* INTFMODULEMESSAGE_HPP_ */
+#endif /* CTRLINTFMODULEMESSAGE_HPP_ */
