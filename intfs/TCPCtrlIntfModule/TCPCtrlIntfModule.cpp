@@ -31,15 +31,15 @@ void TCPCtrlIntfModule::_task() {
   server.set_blocking(true);
 
   nsapi_status = server.open(_p_net);
-  debug("server.open rc: %d\n", nsapi_status);
+  debug("[TCPCtrlIntfModule::_task] server.open rc: %d\n",nsapi_status);
   assert(nsapi_status == NSAPI_ERROR_OK);
 
   nsapi_status = server.bind(_port);
-  debug("server.bind rc: %d\n", nsapi_status);
+  debug("[TCPCtrlIntfModule::_task] server.bind rc: %d\n", nsapi_status);
   assert(nsapi_status == NSAPI_ERROR_OK);
 
   nsapi_status = server.listen(1);
-  debug("server.listen rc: %d\n", nsapi_status);
+  debug("[TCPCtrlIntfModule::_task] server.listen rc: %d\n", nsapi_status);
   assert(nsapi_status == NSAPI_ERROR_OK);
 
   while(true) {
@@ -48,7 +48,7 @@ void TCPCtrlIntfModule::_task() {
 
     /* Blocking */
     client = server.accept(&nsapi_status);
-    debug("server.accept rc: %d\n", nsapi_status);
+    debug("[TCPCtrlIntfModule::_task] server.accept rc: %d\n", nsapi_status);
     assert(nsapi_status == NSAPI_ERROR_OK);
 
     /* Not blocking from now on */
@@ -63,7 +63,7 @@ void TCPCtrlIntfModule::_task() {
         char c;
 
         count = client->recv(&c, 1);
-        debug("client->recv rc: %d\n", count);
+        debug("[TCPCtrlIntfModule::_task] client->recv rc: %d\n", count);
         if(count < 0) {
           goto nsapi_error;
         }
@@ -90,12 +90,12 @@ void TCPCtrlIntfModule::_task() {
 
       /* Writes the response to TCP socket */
       count = client->send(buff, strlen(buff));
-      debug("client->send rc: %d\n", count);
+      debug("[TCPCtrlIntfModule::_task] client->send rc: %d\n", count);
       if(count < 0) {
         goto nsapi_error;
       }
       count = client->send(&_terminator, 1);
-      debug("client->send rc: %d\n", count);
+      debug("[TCPCtrlIntfModule::_task] client->send rc: %d\n", count);
       if(count < 0) {
         goto nsapi_error;
       }
@@ -103,7 +103,7 @@ void TCPCtrlIntfModule::_task() {
 
 nsapi_error:
     nsapi_status = client->close();
-    debug("client->close rc: %d\n", nsapi_status);
+    debug("[TCPCtrlIntfModule::_task] client->close rc: %d\n", nsapi_status);
 
     assert(nsapi_status == NSAPI_ERROR_OK);
   }

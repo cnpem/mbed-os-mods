@@ -59,15 +59,15 @@ int main() {
     do {
         ThisThread::sleep_for(5s);
         nsapi_status = net.get_connection_status();
-        debug("net.get_connection_status rc: %d\n", nsapi_status);
+        debug("[main] net.get_connection_status rc: %d\n", nsapi_status);
     } while(nsapi_status != NSAPI_STATUS_GLOBAL_UP);
 
-    debug("MAC: %s\n", net.get_mac_address());
+    debug("[main] MAC: %s\n", net.get_mac_address());
     
     nsapi_status = net.get_ip_address(&addr);
-    debug("net.get_ip_address rc: %d\n", nsapi_status);
+    debug("[main] net.get_ip_address rc: %d\n", nsapi_status);
     assert(nsapi_status == NSAPI_ERROR_OK);
-    debug("IP: %s\n", addr.get_ip_address());
+    debug("[main] IP: %s\n", addr.get_ip_address());
 
     do {
         ThisThread::sleep_for(500ms);
