@@ -47,9 +47,12 @@ void TCPCtrlIntfModule::_task() {
     TCPSocket *client;
 
     /* Blocking */
-    client = server.accept(&nsapi_status);
-    debug("[TCPCtrlIntfModule::_task] server.accept rc: %d\n", nsapi_status);
-    assert(nsapi_status == NSAPI_ERROR_OK);
+    do {
+        ThisThread::sleep_for(5s);
+        client = server.accept(&nsapi_status);
+        debug("[TCPCtrlIntfModule::_task] server.accept rc: %d\n",
+            nsapi_status);
+    } while(nsapi_status != NSAPI_ERROR_OK);
 
     /* Not blocking from now on */
     client->set_timeout(_timeout);

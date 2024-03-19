@@ -119,10 +119,12 @@ void TCPFwUpdateModule::_task() {
         uint32_t fw_flashed_count = 0;
 
         /* Blocking */
-        p_client = server.accept(&nsapi_status);
-        debug("[TCPFwUpdateModule::_task] server.accept rc: %d\n",
-            nsapi_status);
-        assert(nsapi_status == NSAPI_ERROR_OK);
+        do {
+            ThisThread::sleep_for(5s);
+            p_client = server.accept(&nsapi_status);
+            debug("[TCPFwUpdateModule::_task] server.accept rc: %d\n",
+                nsapi_status);
+        } while(nsapi_status != NSAPI_ERROR_OK);
 
         /* Not blocking from now on */
         p_client->set_timeout(_timeout);
