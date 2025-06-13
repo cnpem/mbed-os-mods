@@ -39,7 +39,7 @@ particularities.
 
 ## Firmware architecture
 
-![Image](https://github.com/user-attachments/assets/26ff07ba-0e39-4a5c-a854-79c5d7c8b92f)
+![Image](https://github.com/user-attachments/assets/9dc9eccb-181a-4c71-87b4-b7fec71c77a6)
 
 `CtrlCoreModule` is the module responsible for receiving, parsing, acting on and
 responding to requests (commands) coming from the interface modules.
