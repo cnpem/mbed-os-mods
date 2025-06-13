@@ -46,8 +46,14 @@ responding to requests (commands) coming from the interface modules.
 
 _`TCPStreamIntfModule`_ is currently under development.
 
+## Modules' inheritance diagram
+
+![Image](https://github.com/user-attachments/assets/c937321d-7b6b-4837-a500-573317237896)
+
 ## How to use it
 
 Add this repository as a submodule of your application.
 
 	git submodule git@github.com:cnpem/mbed-os-mods.git
+
+
