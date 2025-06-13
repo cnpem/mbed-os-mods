@@ -54,6 +54,6 @@ _`TCPStreamIntfModule`_ is currently under development.
 
 Add this repository as a submodule of your application.
 
-	git submodule git@github.com:cnpem/mbed-os-mods.git
+	git submodule add git@github.com:cnpem/mbed-os-mods.git
 
 
