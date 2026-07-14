@@ -74,6 +74,19 @@ TCPStreamIntfModule::TCPStreamIntfModule(
 
           if(nsapi_status == NSAPI_ERROR_OK) {
             is_client_accepted = true;
+
+            /* Get connected client information */
+            SocketAddress client_addr;
+            nsapi_status = client->getpeername(&client_addr);
+            if(nsapi_status == NSAPI_ERROR_OK) {
+              debug("[TCPStreamIntfModule::_task] client_addr.get_ip_address: "
+                    "%s\n", client_addr.get_ip_address());
+              debug("[TCPStreamIntfModule::_task] client_addr.get_port: %u\n",
+                    client_addr.get_port());
+            } else {
+              debug("[TCPStreamIntfModule::_task] client->getpeername rc: "
+                    "%d\n", nsapi_status);
+            }
           }
         }
 

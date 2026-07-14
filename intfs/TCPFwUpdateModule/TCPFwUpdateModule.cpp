@@ -126,6 +126,19 @@ void TCPFwUpdateModule::_task() {
                 nsapi_status);
         } while(nsapi_status != NSAPI_ERROR_OK);
 
+        /* Get connected client information */
+        SocketAddress client_addr;
+        nsapi_status = p_client->getpeername(&client_addr);
+        if(nsapi_status == NSAPI_ERROR_OK) {
+            debug("[TCPCtrlIntfModule::_task] client_addr.get_ip_address: "
+                  "%s\n", client_addr.get_ip_address());
+            debug("[TCPCtrlIntfModule::_task] client_addr.get_port: %u\n",
+                  client_addr.get_port());
+        } else {
+            debug("[TCPCtrlIntfModule::_task] p_client->getpeername rc: %d\n",
+                  nsapi_status);
+        }
+
         /* Not blocking from now on */
         p_client->set_timeout(_timeout);
 
